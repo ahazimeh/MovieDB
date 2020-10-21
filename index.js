@@ -82,3 +82,13 @@ app.get('/movies/read/by-title',function(req,res){
         return a.title.localeCompare(b.title);
     }));
 });
+
+
+app.get('/movies/read/id/:id',function(req,res){
+    if(req.params.id<=0 || req.params.id>movies.length)
+    res.status(404).send("error:true, message:the movie "+req.params.id+" does not exist");
+    else
+    res.send(movies[req.params.id-1]);
+
+    
+});
