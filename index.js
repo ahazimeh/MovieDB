@@ -7,7 +7,7 @@ app.listen(port, function () {
 
 
 app.get('/test',function(req,res){
-    res.send('{status:200, message:"ok"}');
+    res.status(200).send('ok');
     
 });
 
@@ -23,5 +23,21 @@ app.get('/time',function(req,res){
     else
     minutes = ""+today.getMinutes();
     var time = hours + ":" + minutes;
-    res.send('{status:200, message:'+time+'}');
+    res.status(200).send(time);
+});
+app.get("/hello",function(req,res){
+    res.status(200).send("Hello");
+});
+app.get("/hello/:id",function(req,res){
+    res.status(200).send("Hello, "+req.params.id);
+});
+
+app.get('/search',function(req,res){
+    if(req.query.s==""){
+        res.status(500).send("error:true, you have to provide a search");
+    }
+    else{
+        res.status(200).send("ok, data:"+req.query.s);
+        
+    }
 });
