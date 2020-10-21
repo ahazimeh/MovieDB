@@ -50,7 +50,13 @@ app.get('/search',function(req,res){
 });
 
 app.get('/movies/create',function(req,res){
-    
+    if(!(/([0-9]{4})/.test(req.query.year)) || typeof(req.query.year)==="undefined" || req.query.year==""||typeof(req.query.title)==="undefined" || req.query.title=="")
+    res.status(403).send("error:true, message:you cannot create a movie without providing a title and a year");
+    var rating = 4;
+    if(/([0-9]+)/.test(req.query.rating))
+    rating = req.query.rating;
+    movies.push({ title: req.query.title, year: req.query.year, rating: rating });
+    res.send(movies);
 });
 
 app.get('/movies/read',function(req,res){
@@ -92,3 +98,6 @@ app.get('/movies/read/id/:id',function(req,res){
 
     
 });
+
+
+
