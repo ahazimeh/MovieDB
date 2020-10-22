@@ -49,7 +49,7 @@ app.get('/search',function(req,res){
     }
 });
 
-app.get('/movies/create',function(req,res){
+app.post('/movies/create',function(req,res){
     if(!(/([0-9]{4})/.test(req.query.year)) || typeof(req.query.year)==="undefined" || req.query.year==""||typeof(req.query.title)==="undefined" || req.query.title=="")
     res.status(403).send("error:true, message:you cannot create a movie without providing a title and a year");
     var rating = 4;
@@ -63,7 +63,7 @@ app.get('/movies/read',function(req,res){
     res.status(200).send(movies);
 });
 
-app.get('/movies/update/:id',function(req,res){
+app.put('/movies/update/:id',function(req,res){
     if(req.params.id<=0 || req.params.id>movies.length)
     res.status(404).send("error:true, message:the movie "+req.params.id+" does not exist");
     else{
@@ -77,7 +77,7 @@ app.get('/movies/update/:id',function(req,res){
     }
 });
 
-app.get('/movies/delete/:id',function(req,res){
+app.delete('/movies/delete/:id',function(req,res){
     if(req.params.id<=0 || req.params.id>movies.length)
     res.status(404).send("error:true, message:the movie "+req.params.id+" does not exist");
     else{
