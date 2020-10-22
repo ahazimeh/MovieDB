@@ -63,8 +63,18 @@ app.get('/movies/read',function(req,res){
     res.status(200).send(movies);
 });
 
-app.get('//movies/update',function(req,res){
-    
+app.get('/movies/update/:id',function(req,res){
+    if(req.params.id<=0 || req.params.id>movies.length)
+    res.status(404).send("error:true, message:the movie "+req.params.id+" does not exist");
+    else{
+        if((/([0-9]{4})/.test(req.query.year)))
+        movies[req.params.id-1].year = req.query.year;
+        if(!(typeof(req.query.title)==="undefined" || req.query.title==""))
+        movies[req.params.id-1].title = req.query.title;
+        if(!(typeof(req.query.rating)==="undefined" || req.query.rating==""))
+        movies[req.params.id-1].rating = req.query.rating;
+        res.status(200).send(movies);
+    }
 });
 
 app.get('/movies/delete/:id',function(req,res){
