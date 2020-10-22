@@ -67,8 +67,13 @@ app.get('//movies/update',function(req,res){
     
 });
 
-app.get('/movies/delete',function(req,res){
-    
+app.get('/movies/delete/:id',function(req,res){
+    if(req.params.id<=0 || req.params.id>movies.length)
+    res.status(404).send("error:true, message:the movie "+req.params.id+" does not exist");
+    else{
+        movies.splice(req.params.id-1,1);
+        res.status(200).send(movies);
+    }
 });
 
 
