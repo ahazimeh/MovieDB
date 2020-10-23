@@ -22,10 +22,27 @@ var users = [
 var user = [
     {username:'ali',password:'123456'}
 ]
+var admins = [
+    {username:'admin',password:'_strongpassword'}
+]
+var admin = [
+    {username:'admin',password:'_strongpassword'}
+]
+var user = [
+    {username:'ali',password:'123456'}
+]
 function authenticate(){
     let i = 0;
     for(i=0;i<users.length;i++){
         if(user[0].username === users[i].username && user[0].password === users[i].password)
+        break;
+    }
+    if(i==users.length)return false;return true;
+}
+function authenticateAdmin(){
+    let i = 0;
+    for(i=0;i<admins.length;i++){
+        if(admin[0].username === admins[i].username && admin[0].password === admins[i].password)
         break;
     }
     if(i==users.length)return false;return true;
@@ -42,8 +59,8 @@ MongoClient.connect(connectionString, { useUnifiedTopology: true })
 
     
     // quotesCollection.insertOne(movies[1])
-    app.get('/movies/create',function(req,res){
-        if(authenticate()){
+    app.post('/movies/create',function(req,res){
+        if(authenticate() || authenticateAdmin()){
         if(!(/([0-9]{4})/.test(req.query.year)) || typeof(req.query.year)==="undefined" || req.query.year==""||typeof(req.query.title)==="undefined" || req.query.title=="")
         res.status(403).send("error:true, message:you cannot create a movie without providing a title and a year");
         else{
@@ -58,7 +75,7 @@ MongoClient.connect(connectionString, { useUnifiedTopology: true })
             console.log(result)
           })
           .catch(error => console.error(error))
-        res.send(movies);
+        res.status(200).send(movies);
     }
 }
 else
@@ -67,10 +84,10 @@ res.send("Acess Denied");
 
 
     app.get('/movies/read',function(req,res){
-        if(authenticate()){
+        if(authenticate() || authenticateAdmin()){
         db.collection('test').find().toArray()
     .then(results => {
-    res.send(results)
+    res.status(200).send(results)
     })
     .catch(/* ... */)
 }
@@ -81,10 +98,10 @@ res.send("Acess Denied");
 
 
     app.get('/movies/read/by-date',function(req,res){
-        if(authenticate()){
+        if(authenticate() || authenticateAdmin()){
         db.collection('test').find().toArray()
     .then(results => {
-    res.send(results.sort(function(a,b){
+    res.status(200).send(results.sort(function(a,b){
         return a.year - b.year;
     }))
     })
@@ -96,10 +113,10 @@ res.send("Acess Denied");
 
 
     app.get('/movies/read/by-rating',function(req,res){
-        if(authenticate()){
+        if(authenticate() || authenticateAdmin()){
         db.collection('test').find().toArray()
     .then(results => {
-    res.send(results.sort(function(a,b){
+    res.status(200).send(results.sort(function(a,b){
         return a.rating - b.rating;
     }))
     })
@@ -112,10 +129,10 @@ res.send("Acess Denied");
 
 
     app.get('/movies/read/by-title',function(req,res){
-        if(authenticate()){
+        if(authenticate() || authenticateAdmin()){
         db.collection('test').find().toArray()
     .then(results => {
-    res.send(results.sort(function(a,b){
+    res.status(200).send(results.sort(function(a,b){
         return a.title.localeCompare(b.title);
     }))
     })
@@ -128,14 +145,14 @@ res.send("Acess Denied");
     
 
 
-    app.get('/movies/delete/:id',function(req,res){
-        if(authenticate()){
+    app.delete('/movies/delete/:id',function(req,res){
+        if(authenticate() || authenticateAdmin()){
 
         quotesCollection.findOneAndDelete(
             { _id: ObjectId(req.params.id) }
           )
           .then(result => {
-            // res.send(result);
+            res.status(200).send(result);
         })
             .catch(error => console.error(error))
         }
@@ -146,10 +163,10 @@ res.send("Acess Denied");
 
 
     app.get('/movies/read/id/:id',function(req,res){
-        if(authenticate()){
+        if(authenticate() || authenticateAdmin()){
         db.collection('test').find({ _id: ObjectId(req.params.id) } ).toArray()
     .then(results => {
-    res.send(results)
+    res.status(200).send(results)
     })
     .catch(/* ... */)
 }
@@ -162,8 +179,8 @@ res.send("Acess Denied");
 
 
 
-    app.get('/movies/update/:id',function(req,res){
-        if(authenticate()){
+    app.put('/movies/update/:id',function(req,res){
+        if(authenticate() || authenticateAdmin()){
             if((/([0-9]{4})/.test(req.query.year)))
             quotesCollection.findOneAndUpdate(
                 { _id: ObjectId(req.params.id) }
@@ -178,7 +195,7 @@ res.send("Acess Denied");
                 }
               )
                 .then(result => {
-                    res.send(result);
+                    res.status(200).send(result);
                 })
                 .catch(error => console.error(error))
 
@@ -196,7 +213,7 @@ res.send("Acess Denied");
                 }
               )
                 .then(result => {
-                    res.send(result);
+                    res.status(200).send(result);
                 })
                 .catch(error => console.error(error))
 
@@ -214,7 +231,7 @@ res.send("Acess Denied");
                 }
               )
                 .then(result => {
-                    res.send(result);
+                    res.status(200).send(result);
                 })
                 .catch(error => console.error(error))
 
@@ -347,16 +364,48 @@ app.get('/search',function(req,res){
     
 // });
 app.get('/users/read',function(req,res){
-    res.send(users);
+    if(authenticateAdmin()){
+    res.status(200).send(users);
+}
+else
+res.send("Access Denied");
 });
-app.get('/users/update/:id',function(req,res){
+app.put('/users/update/:id',function(req,res){
+    if(authenticateAdmin()){
     if(req.query.username !="" && typeof(req.query.username)!="undefined" )
     users[req.params.id-1].username = req.query.username;
     if(req.query.password !="" && typeof(req.query.password)!="undefined" )
     users[req.params.id-1].password = req.query.password;
-    res.send(users[req.params.id-1]);
+    res.status(200).send(users[req.params.id-1]);
+}
+else
+res.send("Access Denied")
 });
 
+app.post('/users/create',function(req,res){
+    if(authenticateAdmin()){
+    if(req.query.username !="" && typeof(req.query.username)!="undefined" && req.query.password !="" && typeof(req.query.password)!="undefined"){
+    users.push({username:req.query.username,password:req.query.password});
+    res.status(200).send("created");
+    }
+    else
+    res.status(403).send("Please enter a username and password");
+}
+else
+res.send("Access Denied")
 
+});
 
+app.delete('/users/delete/:id',function(req,res){
+    if(authenticateAdmin()){
+    if(req.params.id<=0 || req.params.id>users.length)
+    res.status(404).send("User id is not available");
+    else{
+        users.splice(req.params.id-1,1);
+        res.status(200).send("User Deleted");
+    }
+}
+else
+res.send("Access Denied");
 
+});
