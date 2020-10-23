@@ -195,7 +195,7 @@ res.send("Acess Denied");
                 }
               )
                 .then(result => {
-                    res.status(200).send(result);
+                    
                 })
                 .catch(error => console.error(error))
 
@@ -213,7 +213,7 @@ res.send("Acess Denied");
                 }
               )
                 .then(result => {
-                    res.status(200).send(result);
+                    
                 })
                 .catch(error => console.error(error))
 
@@ -231,7 +231,7 @@ res.send("Acess Denied");
                 }
               )
                 .then(result => {
-                    res.status(200).send(result);
+                    
                 })
                 .catch(error => console.error(error))
 
