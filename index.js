@@ -28,9 +28,7 @@ var admins = [
 var admin = [
     {username:'admin',password:'_strongpassword'}
 ]
-var user = [
-    {username:'ali',password:'123456'}
-]
+
 function authenticate(){
     let i = 0;
     for(i=0;i<users.length;i++){
